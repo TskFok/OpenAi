@@ -54,9 +54,9 @@ func main() {
 
 	go func() {
 		//不使用https
-		if err := s.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-			log.Printf("listen: %s\n", err)
-		}
+		//if err := s.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+		//	log.Printf("listen: %s\n", err)
+		//}
 		//使用https
 		if err := s.ListenAndServeTLS(global.TlsCert, global.TlsKey); err != nil && errors.Is(err, http.ErrServerClosed) {
 			log.Printf("listen: %s\n", err)
