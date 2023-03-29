@@ -1,0 +1,50 @@
+<table xmlns="http://www.w3.org/1999/html">
+    <body>
+    <textarea id="question" style="width: 800px;height: 300px" placeholder="请输入你的提问"></textarea>
+    <br>
+    <div style="height: 30px"><span id="msg">等待中</span></div>
+    <br>
+    key: <input type="text" id="key" placeholder="请输入你的key">
+    <br>
+    <br>
+    <input type="button" onclick="tStream()" value="提问">
+    </body>
+</table>
+<script type="text/javascript">
+    function tStream() {
+        let element = document.getElementById("question")
+        let url = "chat2"
+        let data = document.getElementById("question").value;
+        let key = document.getElementById("key").value;
+
+        xmlHttp = new XMLHttpRequest();
+
+        if (xmlHttp == null) {
+            alert("Your browser does not support XMLHTTP.");
+            element.val('Your browser does not support XMLHTTP. Click the LOG link to monitor the procedure.');
+            return 0;
+        }
+        var xhr = xmlHttp;
+        xhr.open('POST', url, true);
+        // 如果需要像 HTML 表单那样 POST 数据，请使用 setRequestHeader() 来添加 HTTP 头。然后在 send() 方法中规定您希望发送的数据：
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.timeout = 20000 //设置超时时间20s
+        xhr.send("question=" + data + "&key=" + key);
+
+        document.getElementById("msg").innerHTML = "请求中"
+        var timer;
+        timer = window.setInterval(function () {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                window.clearTimeout(timer);
+                document.getElementById("msg").innerHTML = "等待中"
+            }
+            element.value = xhr.responseText;
+        }, 1000);
+
+        xhr.ontimeout = function (event) {
+            window.clearTimeout(timer);
+            document.getElementById("msg").innerHTML = "请求超时"
+        }
+    }
+
+</script>

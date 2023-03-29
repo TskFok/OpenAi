@@ -1,0 +1,66 @@
+<table xmlns="http://www.w3.org/1999/html">
+    <script src="public/static/jquery.js"></script>
+    <script src="public/static/markdown/editormd.min.js"></script>
+    <link rel="stylesheet" href="public/static/markdown/css/editormd.css"/>
+    <body>
+        <div id="question"><textarea id="question-area"></textarea></div>
+    <br>
+    <div style="height: 30px"><span id="msg">等待中</span></div>
+    <br>
+    key: <input type="text" id="key" placeholder="请输入你的key">
+    <br>
+    <br>
+    <input type="button" onclick="tStream()" value="提问">
+    </body>
+</table>
+<script type="text/javascript">
+    var editor
+    $(function() {
+        editor = editormd("question", {
+            width  : "100%",
+            height : "500",
+            path   : "public/static/markdown/lib/",
+            syncScrolling : "single",
+            saveHTMLToTextarea: true,
+        });
+    });
+
+    function tStream() {
+        let question = editor.getMarkdown()
+
+        if (question === undefined || question === "") {
+            alert("请输入提问")
+
+            return
+        }
+
+        editor.setMarkdown("")
+
+        let key = document.getElementById("key").value;
+        if (key === undefined || key === "") {
+            alert("请输入key")
+
+            return
+        }
+        document.getElementById("msg").innerHTML = "开始请求"
+
+        const stream = new EventSource("/stream?question=" + question + "&key=" + key)
+        stream.addEventListener("message", function (e) {
+            if(e.data=="<<emptystring>>"){
+                editor.setMarkdown(editor.getMarkdown() + " ")
+            } else {
+                editor.setMarkdown(editor.getMarkdown() + e.data)
+            }
+            document.getElementById("msg").innerHTML = "返回中"
+        });
+        stream.addEventListener("stop", function (e) {
+            stream.close()
+            document.getElementById("msg").innerHTML = "已完成"
+        });
+        stream.onerror = function (event) {
+            stream.close()
+            document.getElementById("msg").innerHTML = "请求错误"
+        }
+    }
+
+</script>
