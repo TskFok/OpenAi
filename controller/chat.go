@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type Gpt struct {
+type gpt struct {
 	Id      string `json:"id,omitempty"`
 	Object  string `json:"object,omitempty"`
 	Created int64  `json:"created,omitempty"`
@@ -100,7 +100,7 @@ func Chat(context *gin.Context) {
 	if rep.StatusCode == http.StatusOK {
 		decode := json.NewDecoder(rep.Body)
 
-		r := &Gpt{}
+		r := &gpt{}
 		decode.Decode(r)
 
 		fmt.Println(r)

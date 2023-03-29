@@ -1,0 +1,35 @@
+<table xmlns="http://www.w3.org/1999/html">
+    <script src="public/static/jquery.js"></script>
+    <body>
+    <textarea id="question" style="width: 800px;height: 300px" placeholder="请输入你的提问"></textarea>
+    <input type="image" id="img" src="">
+    <br>
+    <div style="height: 30px"><span id="msg">等待中</span></div>
+    <br>
+    key: <input type="text" id="key" placeholder="请输入你的key">
+    <br>
+    <br>
+    <input type="button" onclick="tStream()" value="提问">
+    </body>
+</table>
+<script type="text/javascript">
+    function tStream() {
+        let question = $("#question").val()
+        let key = $("#key").val()
+
+        $.ajax({
+            type: "post",
+            url: "/image",
+            data: {
+                "question": question, "key": key,
+            },
+            success: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    $("#img").attr("src", data[i].url)
+                }
+            }
+        });
+
+    }
+
+</script>

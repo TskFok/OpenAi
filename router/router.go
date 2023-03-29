@@ -24,6 +24,7 @@ func InitRouter() {
 
 	Handle.POST("/chat", controller.Chat)
 	Handle.POST("/chat2", controller.Chat2)
+	Handle.POST("/image", controller.Image)
 	Handle.GET("/stream", controller.ChatStream)
 
 	Handle.SetHTMLTemplate(html.GetQuestionTemplate())
@@ -38,6 +39,10 @@ func InitRouter() {
 
 	Handle.GET("/chat-web-ws", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "questionWs.html", gin.H{})
+	})
+
+	Handle.GET("/image", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "image.html", gin.H{})
 	})
 
 	wsGroup := Handle.Group("/gpt")
