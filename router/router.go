@@ -13,7 +13,6 @@ var Handle *gin.Engine
 
 func InitRouter() {
 	go websockets.WebsocketManager.Start()
-	go websockets.WebsocketManager.SendService()
 
 	gin.SetMode(gin.ReleaseMode)
 

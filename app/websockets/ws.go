@@ -66,7 +66,6 @@ func (c *Client) Read() {
 		if err != nil || messageType == websocket.CloseMessage {
 			break
 		}
-		log.Printf("client [%s] receive message: %s", c.Id, string(message))
 		c.Message <- message
 	}
 }
@@ -89,9 +88,9 @@ func (c *Client) Write() {
 		select {
 		case message, ok := <-c.Message:
 			if !ok {
-				break
+				log.Printf("client [%s] write message: %s", c.Id, "no ok")
+				return
 			}
-			log.Printf("client [%s] write message: %s", c.Id, string(message))
 
 			send := &WsSend{}
 			err := json.Unmarshal(message, send)
