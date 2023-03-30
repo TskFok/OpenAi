@@ -44,8 +44,13 @@ func main() {
 	//浏览器图标
 	router.Handle.StaticFileFS("/favicon.ico", "./public/static/favicon.ico", http.FS(Fs))
 
+	addr := fmt.Sprintf(":%d", 443)
+	if global.AppMode == gin.DebugMode {
+		addr = fmt.Sprintf(":%d", 9988)
+	}
+
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", 443),
+		Addr:           addr,
 		Handler:        router.Handle,
 		ReadTimeout:    time.Duration(20) * time.Second,
 		WriteTimeout:   time.Duration(20) * time.Second,
@@ -53,13 +58,16 @@ func main() {
 	}
 
 	go func() {
-		//不使用https
-		//if err := s.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-		//	log.Printf("listen: %s\n", err)
-		//}
-		//使用https
-		if err := s.ListenAndServeTLS(global.TlsCert, global.TlsKey); err != nil && errors.Is(err, http.ErrServerClosed) {
-			log.Printf("listen: %s\n", err)
+		if global.AppMode == gin.DebugMode {
+			//不使用https
+			if err := s.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+				log.Printf("listen: %s\n", err)
+			}
+		} else {
+			//使用https
+			if err := s.ListenAndServeTLS(global.TlsCert, global.TlsKey); err != nil && errors.Is(err, http.ErrServerClosed) {
+				log.Printf("listen: %s\n", err)
+			}
 		}
 	}()
 

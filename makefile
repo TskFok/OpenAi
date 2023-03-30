@@ -29,10 +29,8 @@ build-mac: mac conf-local build-file conf-rollback
 
 build-linux: linux conf-local build-file conf-rollback
 
-run-main:
+run-mac: mac
 	go run main.go
-
-run-mac: mac conf-local run-main
 
 update:
 	go mody tidy

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/TskFok/OpenAi/app/global"
 	"github.com/TskFok/OpenAi/app/websockets"
 	"github.com/TskFok/OpenAi/controller"
 	"github.com/TskFok/OpenAi/middleware"
@@ -14,7 +15,7 @@ var Handle *gin.Engine
 func InitRouter() {
 	go websockets.WebsocketManager.Start()
 
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(global.AppMode)
 
 	Handle = gin.New()
 	Handle.Use(gin.Recovery())
