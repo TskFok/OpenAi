@@ -1,4 +1,4 @@
-package websockets
+package file
 
 import (
 	"context"
@@ -101,13 +101,19 @@ func (c *Client) Write() {
 
 			cai := openai.NewClient(send.Key)
 
+			content, err := file(send.Question, send.Key)
+
+			if err != nil {
+				return
+			}
+
 			req := openai.ChatCompletionRequest{
 				Model:     openai.GPT3Dot5Turbo,
 				MaxTokens: 3000,
 				Messages: []openai.ChatCompletionMessage{
 					{
 						Role:    openai.ChatMessageRoleUser,
-						Content: send.Question,
+						Content: content + send.Question + "\n A:",
 					},
 				},
 				Stream: true,

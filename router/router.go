@@ -2,7 +2,8 @@ package router
 
 import (
 	"github.com/TskFok/OpenAi/app/global"
-	"github.com/TskFok/OpenAi/app/websockets"
+	"github.com/TskFok/OpenAi/app/websockets/chat"
+	"github.com/TskFok/OpenAi/app/websockets/file"
 	"github.com/TskFok/OpenAi/controller"
 	"github.com/TskFok/OpenAi/middleware"
 	"github.com/TskFok/OpenAi/public/html"
@@ -13,7 +14,7 @@ import (
 var Handle *gin.Engine
 
 func InitRouter() {
-	go websockets.WebsocketManager.Start()
+	go chat.WebsocketManager.Start()
 
 	gin.SetMode(global.AppMode)
 
@@ -45,8 +46,17 @@ func InitRouter() {
 		c.HTML(http.StatusOK, "image.html", gin.H{})
 	})
 
+	Handle.GET("/chat-file", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "questionFileWs.html", gin.H{})
+	})
+
 	wsGroup := Handle.Group("/gpt")
 	{
-		wsGroup.GET("/:channel", websockets.WebsocketManager.WsClient)
+		wsGroup.GET("/:channel", chat.WebsocketManager.WsClient)
+	}
+
+	wsGroupFile := Handle.Group("/gpt-file")
+	{
+		wsGroupFile.GET("/:channel", file.WebsocketManager.WsClient)
 	}
 }

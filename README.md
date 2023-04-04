@@ -16,4 +16,6 @@
 守护进程运行 go run main.go bg
 日志在chat.log
 关闭进程 kill -2 pid
+
+ct.sh 进程挂了自动重启脚本
 ``````
