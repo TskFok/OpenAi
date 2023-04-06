@@ -114,6 +114,7 @@ func (c *Client) Write() {
 			}
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {
+				fmt.Println(err.Error())
 				break
 			}
 

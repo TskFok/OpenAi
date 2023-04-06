@@ -54,3 +54,10 @@ func file(question, key string) (string, error) {
 
 	return "Answer the question as truthfully as possible using the provided context, and if the answer is not contained within the text below, say \"I don't know.\"\\n\\nContext:\\n" + "2003年，奥恰洛夫参加了首届世界青少年乒乓球锦标赛 。2008年8月，在北京奥运会乒乓球男子团体比赛中，奥恰洛夫代表德国队获得银牌 。2012年8月，奥恰洛夫在伦敦奥运会乒乓球男子单打比赛中获得铜牌 。2016年8月，在里约奥运会乒乓球男子团体比赛中，奥巴马代表德国队获得铜牌 。2017年，奥恰洛夫获 得第38届乒乓球世界杯男子单打冠军 。2021年7月30日，奥恰洛夫获得2020东京奥运会乒乓球男子单打铜牌 ；8月6日，奥恰洛夫代表德国队获得东京奥运会乒乓球男团亚军" + "\n\n Q: ", nil
 }
+
+//"We have provided context information below: \n"
+//"---------------------\n"
+//"{context_str}\n"
+//"---------------------\n"
+//"Given this information, Please answer my question in the same language that I used to ask you.\n"
+//"Please answer the question: {query_str}\n"
