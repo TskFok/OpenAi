@@ -8,3 +8,5 @@ var AppMode string
 var RedisHost string
 var RedisPassword string
 var RedisClient *redis.Client
+var WechatAppid string
+var WechatSecret string

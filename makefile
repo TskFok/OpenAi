@@ -25,9 +25,14 @@ conf-rollback:
 build-file:
 	go build -o chat -ldflags "-w -s"  -trimpath main.go
 
+build-cli:
+	go build -o cli -ldflags "-w -s"  -trimpath bin/cli/main.go
+
 build-mac: mac conf-local build-file conf-rollback
 
 build-linux: linux conf-local build-file conf-rollback
+
+build-cli: linux conf-local build-cli conf-rollback
 
 run-mac: mac
 	go run main.go
