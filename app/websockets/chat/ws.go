@@ -100,7 +100,7 @@ func (c *Client) Write() {
 				log.Printf("json error")
 			}
 
-			config := openai.DefaultConfig("token")
+			config := openai.DefaultConfig(send.Key)
 			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
 			if err != nil {
 				panic(err)
