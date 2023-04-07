@@ -101,6 +101,7 @@ func (c *Client) Write() {
 			}
 
 			config := openai.DefaultConfig(send.Key)
+			//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
 			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
 			if err != nil {
 				panic(err)
@@ -113,7 +114,6 @@ func (c *Client) Write() {
 			}
 
 			cai := openai.NewClientWithConfig(config)
-			//cai := openai.NewClient(send.Key)
 
 			req := openai.ChatCompletionRequest{
 				Model:     openai.GPT3Dot5Turbo,

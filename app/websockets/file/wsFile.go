@@ -12,6 +12,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 )
@@ -99,7 +100,20 @@ func (c *Client) Write() {
 				log.Printf("json error")
 			}
 
-			cai := openai.NewClient(send.Key)
+			config := openai.DefaultConfig(send.Key)
+			//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
+			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
+			if err != nil {
+				panic(err)
+			}
+			transport := &http.Transport{
+				Proxy: http.ProxyURL(proxyUrl),
+			}
+			config.HTTPClient = &http.Client{
+				Transport: transport,
+			}
+
+			cai := openai.NewClientWithConfig(config)
 
 			content, err := file(send.Question, send.Key)
 

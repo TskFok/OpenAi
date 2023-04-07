@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 func ChatStream(ctx *gin.Context) {
@@ -25,9 +26,21 @@ func ChatStream(ctx *gin.Context) {
 		log.Panic("server not support") //浏览器不兼容
 	}
 	que := ctx.Query("question")
-	//your key
 	key := ctx.Query("key")
-	c := openai.NewClient(key)
+	config := openai.DefaultConfig(key)
+	//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
+	proxyUrl, err := url.Parse("http://127.0.0.1:40000")
+	if err != nil {
+		panic(err)
+	}
+	transport := &http.Transport{
+		Proxy: http.ProxyURL(proxyUrl),
+	}
+	config.HTTPClient = &http.Client{
+		Transport: transport,
+	}
+
+	c := openai.NewClientWithConfig(config)
 
 	req := openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
