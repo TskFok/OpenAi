@@ -3,3 +3,6 @@ tls:
   key: "证书key"
 app:
   mode: debug
+redis:
+  host: 127.0.0.1:6379
+  password: ""

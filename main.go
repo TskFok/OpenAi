@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
 	"github.com/TskFok/OpenAi/app/process"
+	"github.com/TskFok/OpenAi/bootstrap"
 	"github.com/TskFok/OpenAi/router"
-	"github.com/TskFok/OpenAi/utils/conf"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	//加载配置
-	conf.InitConfig()
+	bootstrap.Init()
 
 	//加载router
 	router.InitRouter()
