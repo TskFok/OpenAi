@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Get(url string, header http.Header, responseBody any) int {
+func Get(url string, responseBody any) int {
 	client := &http.Client{}
 
 	res, err := http.NewRequest("GET", url, nil)
@@ -15,10 +15,9 @@ func Get(url string, header http.Header, responseBody any) int {
 		fmt.Println("error")
 	}
 
-	res.Header = header
-
 	rep, _ := client.Do(res)
 
+	fmt.Println(url)
 	fmt.Println(rep)
 	if rep.StatusCode == http.StatusOK {
 		decode := json.NewDecoder(rep.Body)
