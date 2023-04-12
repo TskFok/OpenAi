@@ -5,6 +5,7 @@ app:
   mode: debug
 redis:
   host: 127.0.0.1:6379
+  user: ""
   password: ""
 wechat:
   appid: ""

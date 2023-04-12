@@ -22,6 +22,7 @@ func InitConfig() {
 	global.TlsCert = viper.Get("tls.cert").(string)
 	global.TlsKey = viper.Get("tls.key").(string)
 	global.AppMode = viper.Get("app.mode").(string)
+	global.RedisUser = viper.Get("redis.user").(string)
 	global.RedisPassword = viper.Get("redis.password").(string)
 	global.RedisHost = viper.Get("redis.host").(string)
 	global.WechatAppid = viper.Get("wechat.appid").(string)

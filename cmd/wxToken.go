@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
+	"github.com/TskFok/OpenAi/utils/cache"
 	"github.com/TskFok/OpenAi/utils/curl"
 	"github.com/spf13/cobra"
 )
@@ -19,13 +20,16 @@ type tokenResponse struct {
 var wxTokenCmd = &cobra.Command{
 	Use:   "wx:token",
 	Short: "微信token",
-	Long:  `获取微信token,并存入client`,
+	Long:  `获取微信token,并存入cache`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tkq := &tokenResponse{}
 		curl.Get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+global.WechatAppid+"&secret="+global.WechatSecret, tkq)
 
-		fmt.Println(tkq)
-		//cache.Set("wx:token", "", 1800)
+		if tkq.Errcode == "" {
+			cache.Set("wx:token", tkq.AccessToken, 3600)
+		} else {
+			fmt.Println(tkq)
+		}
 	},
 }
 

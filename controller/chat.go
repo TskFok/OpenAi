@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/TskFok/OpenAi/utils/curl"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -80,7 +79,6 @@ func Chat(context *gin.Context) {
 	r := &gpt{}
 	curl.Post("https://api.openai.com/v1/chat/completions", body, header, r)
 
-	fmt.Println(r)
 	respon := &response{
 		Msgtype: "text",
 		Text: responseText{

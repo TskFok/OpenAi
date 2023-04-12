@@ -11,6 +11,7 @@ func InitRedis() *redis.Client {
 		Addr:     global.RedisHost,
 		Password: global.RedisPassword,
 		DB:       0,
+		Username: global.RedisUser,
 	})
 
 	ctx := context.Background()

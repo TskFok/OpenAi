@@ -17,8 +17,6 @@ func Get(url string, responseBody any) int {
 
 	rep, _ := client.Do(res)
 
-	fmt.Println(url)
-	fmt.Println(rep)
 	if rep.StatusCode == http.StatusOK {
 		decode := json.NewDecoder(rep.Body)
 
