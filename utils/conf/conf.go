@@ -27,5 +27,7 @@ func InitConfig() {
 	global.RedisHost = viper.Get("redis.host").(string)
 	global.WechatAppid = viper.Get("wechat.appid").(string)
 	global.WechatSecret = viper.Get("wechat.secret").(string)
+	global.MysqlDsn = viper.Get("mysql.dsn").(string)
+	global.MysqlPrefix = viper.Get("mysql.prefix").(string)
 
 }
