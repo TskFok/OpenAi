@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/TskFok/OpenAi/app/global"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sashabaranov/go-openai"
@@ -72,7 +73,6 @@ func (c *Client) Read() {
 }
 
 type WsSend struct {
-	Key      string `json:"key,omitempty"`
 	Question string `json:"question,omitempty"`
 }
 
@@ -100,7 +100,7 @@ func (c *Client) Write() {
 				log.Printf("json error")
 			}
 
-			config := openai.DefaultConfig(send.Key)
+			config := openai.DefaultConfig(global.OpenAiToken)
 			//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
 			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
 			if err != nil {

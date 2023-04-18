@@ -17,3 +17,6 @@ var WechatAppid string
 var WechatSecret string
 var MysqlDsn string
 var MysqlPrefix string
+var JwtSecret string
+var JwtExpire int
+var OpenAiToken string

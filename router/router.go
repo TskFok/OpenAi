@@ -25,6 +25,10 @@ func InitRouter() {
 	Handle.Use(gin.Logger())
 	Handle.Use(middleware.Cors())
 
+	Handle.POST("/login", controller.Login)
+	Handle.POST("/register", controller.Register)
+
+	Handle.Use(middleware.Jwt())
 	Handle.POST("/chat", controller.Chat)
 	Handle.POST("/chat2", controller.Chat2)
 	Handle.POST("/image", controller.Image)
@@ -39,14 +43,6 @@ func InitRouter() {
 
 	Handle.GET("/chat-web", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "question.html", gin.H{})
-	})
-
-	Handle.GET("/chat-web-sse", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "questionSse.html", gin.H{})
-	})
-
-	Handle.GET("/chat-web-ws", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "questionWs.html", gin.H{})
 	})
 
 	Handle.GET("/image", func(c *gin.Context) {

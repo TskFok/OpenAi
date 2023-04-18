@@ -29,5 +29,8 @@ func InitConfig() {
 	global.WechatSecret = viper.Get("wechat.secret").(string)
 	global.MysqlDsn = viper.Get("mysql.dsn").(string)
 	global.MysqlPrefix = viper.Get("mysql.prefix").(string)
+	global.JwtSecret = viper.Get("jwt.secret").(string)
+	global.JwtExpire = viper.Get("jwt.expire").(int)
+	global.OpenAiToken = viper.Get("openai.token").(string)
 
 }

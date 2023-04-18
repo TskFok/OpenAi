@@ -13,3 +13,8 @@ wechat:
 mysql:
   dsn: root:@tcp(127.0.0.1:3306)/databasename?charset=utf8mb4&parseTime=True&loc=Local
   prefix: ""
+jwt:
+  secret: ahofahfoshfoihaio #jwt的secret
+  expire: 3 #过期时间3小时
+openai:
+  token: ""
