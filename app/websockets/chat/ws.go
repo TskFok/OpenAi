@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
+	"github.com/TskFok/OpenAi/app/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sashabaranov/go-openai"
@@ -34,6 +35,7 @@ type Client struct {
 	Id, Group string
 	Socket    *websocket.Conn
 	Message   chan []byte
+	Uid       uint32
 }
 
 // MessageData 单个发送数据信息
@@ -99,6 +101,13 @@ func (c *Client) Write() {
 			if err != nil {
 				log.Printf("json error")
 			}
+
+			hm := &model.History{}
+
+			hm.Uid = c.Uid
+			hm.Content = send.Question
+			hm.IsDeleted = 0
+			hm.Create(hm)
 
 			config := openai.DefaultConfig(global.OpenAiToken)
 			//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
@@ -368,6 +377,15 @@ func (manager *Manager) WsClient(ctx *gin.Context) {
 		Socket:  conn,
 		Message: make(chan []byte, 1024),
 	}
+
+	userId, exists := ctx.Get("user_id")
+
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "用户不存在")
+		return
+	}
+
+	client.Uid = userId.(uint32)
 
 	manager.RegisterClient(client)
 	go client.Read()

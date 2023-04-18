@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
+	"github.com/TskFok/OpenAi/app/model"
 	"github.com/gin-gonic/gin"
 	"github.com/sashabaranov/go-openai"
 	"io"
@@ -27,6 +28,24 @@ func ChatStream(ctx *gin.Context) {
 		log.Panic("server not support") //浏览器不兼容
 	}
 	que := ctx.Query("question")
+
+	hm := &model.History{}
+	userId, exists := ctx.Get("user_id")
+
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "用户不存在")
+		return
+	}
+
+	hm.Uid = userId.(uint32)
+	hm.Content = que
+	hm.IsDeleted = 0
+	hmId := hm.Create(hm)
+
+	if hmId == 0 {
+		ctx.JSON(http.StatusBadRequest, "记录历史记录错误")
+		return
+	}
 	config := openai.DefaultConfig(global.OpenAiToken)
 	//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
 	proxyUrl, err := url.Parse("http://127.0.0.1:40000")

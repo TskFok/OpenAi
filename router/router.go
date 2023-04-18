@@ -29,6 +29,8 @@ func InitRouter() {
 	Handle.POST("/register", controller.Register)
 
 	Handle.Use(middleware.Jwt())
+	Handle.GET("/top-ten", controller.TopTen)
+	Handle.DELETE("/history", controller.DeleteHistory)
 	Handle.POST("/chat", controller.Chat)
 	Handle.POST("/chat2", controller.Chat2)
 	Handle.POST("/image", controller.Image)
