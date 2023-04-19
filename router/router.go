@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/TskFok/OpenAi/app/global"
 	"github.com/TskFok/OpenAi/app/websockets/chat"
-	"github.com/TskFok/OpenAi/app/websockets/file"
+	"github.com/TskFok/OpenAi/app/websockets/me"
 	"github.com/TskFok/OpenAi/controller"
 	"github.com/TskFok/OpenAi/middleware"
 	"github.com/TskFok/OpenAi/public/html"
@@ -29,7 +29,7 @@ func InitRouter() {
 	Handle.POST("/register", controller.Register)
 
 	Handle.Use(middleware.Jwt())
-	Handle.GET("/top-ten", controller.TopTen)
+	Handle.GET("/history", controller.HistoryList)
 	Handle.DELETE("/history", controller.DeleteHistory)
 	Handle.POST("/chat", controller.Chat)
 	Handle.POST("/chat2", controller.Chat2)
@@ -51,10 +51,6 @@ func InitRouter() {
 		c.HTML(http.StatusOK, "image.html", gin.H{})
 	})
 
-	Handle.GET("/chat-file", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "questionFileWs.html", gin.H{})
-	})
-
 	Handle.GET("/wx-applet", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "wxApplet.html", gin.H{
 			"code": template.URL(applet.GetCode()),
@@ -66,8 +62,8 @@ func InitRouter() {
 		wsGroup.GET("/:channel", chat.WebsocketManager.WsClient)
 	}
 
-	wsGroupFile := Handle.Group("/gpt-file")
+	wsGroupMe := Handle.Group("/me")
 	{
-		wsGroupFile.GET("/:channel", file.WebsocketManager.WsClient)
+		wsGroupMe.GET("/:channel", me.WebsocketManager.WsClient)
 	}
 }

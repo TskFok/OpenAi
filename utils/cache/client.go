@@ -70,3 +70,15 @@ func Del(key string) bool {
 
 	return true
 }
+
+func Keys(key string) []string {
+	ctx := context.Background()
+
+	keys, err := global.RedisClient.Keys(ctx, key).Result()
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return keys
+}

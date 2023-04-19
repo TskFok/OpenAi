@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
@@ -13,6 +14,11 @@ import (
 	"net/http"
 	"net/url"
 )
+
+type stream struct {
+	Value string `json:"value,omitempty"`
+	Type  string `json:"type,omitempty"`
+}
 
 func ChatStream(ctx *gin.Context) {
 	w := ctx.Writer
@@ -37,15 +43,6 @@ func ChatStream(ctx *gin.Context) {
 		return
 	}
 
-	hm.Uid = userId.(uint32)
-	hm.Content = que
-	hm.IsDeleted = 0
-	hmId := hm.Create(hm)
-
-	if hmId == 0 {
-		ctx.JSON(http.StatusBadRequest, "记录历史记录错误")
-		return
-	}
 	config := openai.DefaultConfig(global.OpenAiToken)
 	//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
 	proxyUrl, err := url.Parse("http://127.0.0.1:40000")
@@ -61,16 +58,49 @@ func ChatStream(ctx *gin.Context) {
 
 	c := openai.NewClientWithConfig(config)
 
+	var a []stream
+	jsonErr := json.Unmarshal([]byte(que), &a)
+
+	if jsonErr != nil {
+		fmt.Println(jsonErr.Error())
+	}
+	length := len(a)
+
+	hm.Uid = userId.(uint32)
+	hm.Content = a[length-1 : length][0].Value
+	hm.IsDeleted = 0
+	hmId := hm.Create(hm)
+
+	if hmId == 0 {
+		ctx.JSON(http.StatusBadRequest, "记录历史记录错误")
+		return
+	}
+
+	megList := make([]openai.ChatCompletionMessage, 0)
+	for i, v := range a {
+		if i == 0 {
+			continue
+		}
+
+		role := openai.ChatMessageRoleUser
+		if v.Type == "answer" {
+			role = openai.ChatMessageRoleAssistant
+		}
+		megList = append(megList, openai.ChatCompletionMessage{
+			Role:    role,
+			Content: v.Value,
+		})
+	}
+
+	if len(megList) > 7 {
+		megList = megList[len(megList)-7:]
+	}
+
 	req := openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 3000,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role:    openai.ChatMessageRoleUser,
-				Content: que,
-			},
-		},
-		Stream: true,
+		Messages:  megList,
+		Stream:    true,
 	}
 	stream, err := c.CreateChatCompletionStream(context.Background(), req)
 	if err != nil {

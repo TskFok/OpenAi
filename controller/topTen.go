@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func TopTen(ctx *gin.Context) {
+func HistoryList(ctx *gin.Context) {
 	uid, exists := ctx.Get("user_id")
 
 	if !exists {

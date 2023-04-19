@@ -15,6 +15,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
@@ -32,10 +33,12 @@ type Manager struct {
 
 // Client 单个 websocket 信息
 type Client struct {
-	Id, Group string
-	Socket    *websocket.Conn
-	Message   chan []byte
-	Uid       uint32
+	Id, Group    string
+	Socket       *websocket.Conn
+	Message      chan []byte
+	Uid          uint32
+	Ccm          []openai.ChatCompletionMessage
+	LastQuestion []byte
 }
 
 // MessageData 单个发送数据信息
@@ -94,6 +97,7 @@ func (c *Client) Write() {
 				log.Printf("client [%s] write message: %s", c.Id, "no ok")
 				return
 			}
+			c.LastQuestion = []byte{}
 
 			send := &WsSend{}
 			err := json.Unmarshal(message, send)
@@ -124,16 +128,20 @@ func (c *Client) Write() {
 
 			cai := openai.NewClientWithConfig(config)
 
+			c.Ccm = append(c.Ccm, openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleUser,
+				Content: send.Question,
+			})
+
+			if len(c.Ccm) > 7 {
+				c.Ccm = c.Ccm[len(c.Ccm)-7:]
+			}
+
 			req := openai.ChatCompletionRequest{
 				Model:     openai.GPT3Dot5Turbo,
 				MaxTokens: 3000,
-				Messages: []openai.ChatCompletionMessage{
-					{
-						Role:    openai.ChatMessageRoleUser,
-						Content: send.Question,
-					},
-				},
-				Stream: true,
+				Messages:  c.Ccm,
+				Stream:    true,
 			}
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {
@@ -163,6 +171,7 @@ func (c *Client) Write() {
 						stream.Close()
 						break
 					}
+					c.LastQuestion = append(c.LastQuestion, response.Choices[0].Delta.Content...)
 
 					msg <- response.Choices[0].Delta.Content
 				}
@@ -182,6 +191,17 @@ func (c *Client) Write() {
 					if err != nil {
 						log.Printf("client [%s] writemessage err: %s", c.Id, err)
 					}
+
+					cct := string(c.LastQuestion)
+					if len(c.LastQuestion) > 1000 {
+						cct = string(c.LastQuestion[0:1000])
+					}
+					cct = strings.ReplaceAll(cct, "\n", "")
+
+					c.Ccm = append(c.Ccm, openai.ChatCompletionMessage{
+						Role:    openai.ChatMessageRoleAssistant,
+						Content: cct,
+					})
 
 					goto EXIT
 				}
