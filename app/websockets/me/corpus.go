@@ -51,7 +51,6 @@ func file(question string) (string, error) {
 	for _, v := range requestion.Data[0].Embedding {
 		fa3 += math.Pow(v, 2)
 	}
-	fmt.Println(fa3)
 	for _, v := range redisKeys {
 		rr := &res{}
 		val := cache.Get(v)
@@ -70,16 +69,11 @@ func file(question string) (string, error) {
 
 		fi := fa / (math.Sqrt(fa2) * math.Sqrt(fa3))
 
-		fmt.Println(fi)
-		fmt.Println(rr.Corpus)
-
 		if fi > lastFa {
 			lastFa = fi
 			corpusDetail = rr.Corpus
 		}
 	}
-	fmt.Println(lastFa)
-	fmt.Println(corpusDetail)
 	return "Answer the question as truthfully as possible using the provided context, and if the answer is not contained within the text below, say \"I don't know.\"\\n\\nContext:\\n" + corpusDetail + "\n\n Q: ", nil
 }
 
