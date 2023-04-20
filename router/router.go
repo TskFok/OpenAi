@@ -17,6 +17,7 @@ var Handle *gin.Engine
 
 func InitRouter() {
 	go chat.WebsocketManager.Start()
+	go me.WebsocketManager.Start()
 
 	gin.SetMode(global.AppMode)
 

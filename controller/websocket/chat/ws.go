@@ -385,7 +385,6 @@ func (manager *Manager) WsClient(ctx *gin.Context) {
 		// 处理 Sec-WebSocket-Protocol Header
 		Subprotocols: []string{ctx.GetHeader("Sec-WebSocket-Protocol")},
 	}
-
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		log.Printf("websocket connect error: %s", ctx.Param("channel"))
@@ -398,7 +397,6 @@ func (manager *Manager) WsClient(ctx *gin.Context) {
 		Socket:  conn,
 		Message: make(chan []byte, 1024),
 	}
-
 	status := middleware.Validate(ctx)
 
 	if status != http.StatusOK {
