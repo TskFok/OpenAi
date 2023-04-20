@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/TskFok/OpenAi/app/global"
+	"github.com/TskFok/OpenAi/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sashabaranov/go-openai"
@@ -373,6 +374,18 @@ func (manager *Manager) WsClient(ctx *gin.Context) {
 		Group:   ctx.Param("channel"),
 		Socket:  conn,
 		Message: make(chan []byte, 1024),
+	}
+
+	status := middleware.Validate(ctx)
+
+	if status != http.StatusOK {
+		tokenErr := client.Socket.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(8888, "登陆失败"), time.Now().Add(10*time.Second))
+
+		if tokenErr != nil {
+			fmt.Println(err.Error())
+		}
+
+		return
 	}
 
 	manager.RegisterClient(client)

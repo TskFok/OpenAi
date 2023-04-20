@@ -20,11 +20,6 @@ type u struct {
 func Jwt() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
-		sec := ctx.GetHeader("Sec-WebSocket-Protocol")
-
-		if sec != "" {
-			token = sec
-		}
 
 		claims, tokenErr := tool.TokenInfo(token)
 

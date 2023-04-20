@@ -28,6 +28,16 @@ func InitRouter() {
 	Handle.POST("/login", controller.Login)
 	Handle.POST("/register", controller.Register)
 
+	wsGroup := Handle.Group("/gpt")
+	{
+		wsGroup.GET("/:channel", chat.WebsocketManager.WsClient)
+	}
+
+	wsGroupMe := Handle.Group("/me")
+	{
+		wsGroupMe.GET("/:channel", me.WebsocketManager.WsClient)
+	}
+
 	Handle.Use(middleware.Jwt())
 	Handle.GET("/history", controller.HistoryList)
 	Handle.DELETE("/history", controller.DeleteHistory)
@@ -57,13 +67,4 @@ func InitRouter() {
 		})
 	})
 
-	wsGroup := Handle.Group("/gpt")
-	{
-		wsGroup.GET("/:channel", chat.WebsocketManager.WsClient)
-	}
-
-	wsGroupMe := Handle.Group("/me")
-	{
-		wsGroupMe.GET("/:channel", me.WebsocketManager.WsClient)
-	}
 }
