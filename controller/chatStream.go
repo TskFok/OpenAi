@@ -15,12 +15,7 @@ import (
 	"net/url"
 )
 
-type stream struct {
-	Value string `json:"value,omitempty"`
-	Type  string `json:"type,omitempty"`
-}
-
-func ChatSse(ctx *gin.Context) {
+func Stream(ctx *gin.Context) {
 	w := ctx.Writer
 
 	w.Header().Set("Content-Type", "text/event-stream")
@@ -33,7 +28,7 @@ func ChatSse(ctx *gin.Context) {
 	if !ok {
 		log.Panic("server not support") //浏览器不兼容
 	}
-	que := ctx.Query("question")
+	que := ctx.PostForm("question")
 
 	hm := &model.History{}
 	userId, exists := ctx.Get("user_id")
@@ -111,47 +106,33 @@ func ChatSse(ctx *gin.Context) {
 	msg := make(chan interface{})
 	stop := make(chan interface{})
 
-	//开个协程不断获取stream数据
 	go func() {
 		for {
 			response, err := stream.Recv()
-
-			//为空发送stop信号
 			if errors.Is(err, io.EOF) {
 				stop <- "stop"
 				break
 			}
 
-			//报错发送error信号
 			if err != nil {
-				fmt.Println(err.Error())
+				ctx.Done()
 				stop <- "error"
 				break
-			}
-
-			content := response.Choices[0].Delta.Content
-
-			//英文回答开头第一个空白字符串特殊处理 返回一个不是空白的字符串让前端进行替换
-			if len(content) > 1 && content[0:1] == " " {
-				msg <- "<<emptystring>>"
 			}
 
 			msg <- response.Choices[0].Delta.Content
 		}
 	}()
 
-	//流式返回数据
 	ctx.Stream(func(w io.Writer) bool {
 		select {
 		case message, ok := <-msg:
 			if ok {
-				ctx.SSEvent("message", message)
+				w.Write([]byte(message.(string)))
 			}
 			return ok
-		case tp := <-stop:
-			ctx.SSEvent(tp.(string), "stop")
+		case <-stop:
 			return false
 		}
 	})
-
 }

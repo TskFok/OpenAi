@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/TskFok/OpenAi/app/global"
-	"github.com/TskFok/OpenAi/app/websockets/chat"
-	"github.com/TskFok/OpenAi/app/websockets/me"
 	"github.com/TskFok/OpenAi/controller"
+	"github.com/TskFok/OpenAi/controller/websocket/chat"
+	"github.com/TskFok/OpenAi/controller/websocket/me"
 	"github.com/TskFok/OpenAi/middleware"
 	"github.com/TskFok/OpenAi/public/html"
 	"github.com/TskFok/OpenAi/service/applet"
@@ -41,21 +41,11 @@ func InitRouter() {
 	Handle.Use(middleware.Jwt())
 	Handle.GET("/history", controller.HistoryList)
 	Handle.DELETE("/history", controller.DeleteHistory)
-	Handle.POST("/chat", controller.Chat)
-	Handle.POST("/chat2", controller.Chat2)
+	Handle.POST("/stream", controller.Stream)
 	Handle.POST("/image", controller.Image)
-	Handle.POST("/upload", controller.Upload)
-	Handle.GET("/stream", controller.ChatStream)
+	Handle.GET("/sse", controller.ChatSse)
 
 	Handle.SetHTMLTemplate(html.GetQuestionTemplate())
-
-	Handle.GET("/scan", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "scan.html", gin.H{})
-	})
-
-	Handle.GET("/chat-web", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "question.html", gin.H{})
-	})
 
 	Handle.GET("/image", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "image.html", gin.H{})
