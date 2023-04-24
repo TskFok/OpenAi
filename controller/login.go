@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/TskFok/OpenAi/app/model"
 	"github.com/TskFok/OpenAi/tool"
 	"github.com/gin-gonic/gin"
@@ -64,9 +63,6 @@ func Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, passwordErr.Error())
 		return
 	}
-
-	fmt.Println(email)
-	fmt.Println(password)
 
 	em := make(map[string]string)
 	em["email"] = email
