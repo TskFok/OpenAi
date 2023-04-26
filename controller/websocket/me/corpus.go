@@ -26,6 +26,11 @@ type res struct {
 	Corpus string
 }
 
+type rs struct {
+	Data   []float64
+	Corpus string
+}
+
 func file(question string) (string, error) {
 	//使用语料库
 	body := make(map[string]interface{})
@@ -52,7 +57,7 @@ func file(question string) (string, error) {
 		fa3 += math.Pow(v, 2)
 	}
 	for _, v := range redisKeys {
-		rr := &res{}
+		rr := &rs{}
 		val := cache.Get(v)
 		err := json.Unmarshal([]byte(val), rr)
 
@@ -62,7 +67,7 @@ func file(question string) (string, error) {
 		var fa float64 = 0
 		var fa2 float64 = 0
 
-		for i, v2 := range rr.Data[0].Embedding {
+		for i, v2 := range rr.Data {
 			fa2 += math.Pow(v2, 2)
 			fa += v2 * requestion.Data[0].Embedding[i]
 		}
