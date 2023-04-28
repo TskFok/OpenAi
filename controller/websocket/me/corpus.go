@@ -32,7 +32,7 @@ type rs struct {
 	Corpus string
 }
 
-func file(question string) (string, error) {
+func file(question, id string) (string, error) {
 	//使用语料库
 	body := make(map[string]interface{})
 	body["model"] = "text-embedding-ada-002"
@@ -51,7 +51,6 @@ func file(question string) (string, error) {
 	redisKeys := cache.Keys("embeding:*")
 
 	var lastFa float64 = -10
-	var corpusDetail string
 
 	var fa3 float64 = 0
 	for _, v := range requestion.Data[0].Embedding {
@@ -75,21 +74,27 @@ func file(question string) (string, error) {
 
 		fi := fa / (math.Sqrt(fa2) * math.Sqrt(fa3))
 
+		cache.ZAdd("embeding_list:"+id, fi, rr.Corpus)
+
 		if fi > lastFa {
 			lastFa = fi
-			corpusDetail = rr.Corpus
 		}
 	}
 
 	bf := buffer.Buffer{}
 	bf.WriteString("We have provided context information below: \n")
 	bf.WriteString("---------------------\n")
-	bf.WriteString(corpusDetail)
-	bf.WriteString("\n")
+
+	//取最接近的三个合并作为一个提示
+	for _, v := range cache.ZRangeAndRemove("embeding_list:"+id, "0", "1", 0, 3) {
+		bf.WriteString(v)
+		bf.WriteString("\n")
+	}
 	bf.WriteString("---------------------\n")
 	bf.WriteString("Given this information, Please answer my question in the same language that I used to ask you.\n")
 	bf.WriteString("and if the answer is not contained within the text below, say \"我不知道.\"")
 	bf.WriteString("Please answer the question: ")
+	bf.WriteString(question)
 
 	return bf.String(), nil
 }

@@ -116,7 +116,7 @@ func (c *Client) Write() {
 
 			cai := openai.NewClientWithConfig(config)
 
-			content, err := file(send.Question)
+			content, err := file(send.Question, c.Id)
 
 			if err != nil {
 				return
@@ -128,7 +128,7 @@ func (c *Client) Write() {
 				Messages: []openai.ChatCompletionMessage{
 					{
 						Role:    openai.ChatMessageRoleUser,
-						Content: content + send.Question,
+						Content: content,
 					},
 				},
 				Stream: true,
