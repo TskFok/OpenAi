@@ -124,7 +124,7 @@ func (c *Client) Write() {
 
 			req := openai.ChatCompletionRequest{
 				Model:     openai.GPT3Dot5Turbo,
-				MaxTokens: 3000,
+				MaxTokens: 500,
 				Messages: []openai.ChatCompletionMessage{
 					{
 						Role:    openai.ChatMessageRoleUser,

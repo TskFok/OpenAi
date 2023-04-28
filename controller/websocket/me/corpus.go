@@ -85,8 +85,8 @@ func file(question, id string) (string, error) {
 	bf.WriteString("We have provided context information below: \n")
 	bf.WriteString("---------------------\n")
 
-	//取最接近的三个合并作为一个提示
-	for _, v := range cache.ZRangeAndRemove("embeding_list:"+id, "0", "1", 0, 3) {
+	//取最接近的五个语料合并作为一个提示,语料越细越好
+	for _, v := range cache.ZRangeAndRemove("embeding_list:"+id, "0", "1", 0, 5) {
 		bf.WriteString(v)
 		bf.WriteString("\n")
 	}
