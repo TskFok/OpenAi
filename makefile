@@ -23,10 +23,10 @@ conf-rollback:
 	mv utils/conf/conf.yaml.bak utils/conf/conf.yaml
 
 build-file:
-	go build -o chat -ldflags "-w -s"  -trimpath main.go
+	go build -o chat-api -ldflags "-w -s"  -trimpath main.go
 
 build-file-cli:
-	go build -o cli -ldflags "-w -s"  -trimpath bin/cli/main.go
+	go build -o chat-cli -ldflags "-w -s"  -trimpath bin/cli/main.go
 
 build-mac: mac conf-local build-file conf-rollback
 

@@ -128,7 +128,7 @@ func (c *Client) Write() {
 				Messages: []openai.ChatCompletionMessage{
 					{
 						Role:    openai.ChatMessageRoleUser,
-						Content: content + send.Question + "\n A:",
+						Content: content + send.Question,
 					},
 				},
 				Stream: true,

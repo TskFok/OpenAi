@@ -7,6 +7,7 @@ import (
 	"github.com/TskFok/OpenAi/app/global"
 	"github.com/TskFok/OpenAi/utils/cache"
 	"github.com/TskFok/OpenAi/utils/curl"
+	"go.uber.org/zap/buffer"
 	"math"
 	"net/http"
 )
@@ -79,7 +80,18 @@ func file(question string) (string, error) {
 			corpusDetail = rr.Corpus
 		}
 	}
-	return "Answer the question as truthfully as possible using the provided context, and if the answer is not contained within the text below, say \"I don't know.\"\\n\\nContext:\\n" + corpusDetail + "\n\n Q: ", nil
+
+	bf := buffer.Buffer{}
+	bf.WriteString("We have provided context information below: \n")
+	bf.WriteString("---------------------\n")
+	bf.WriteString(corpusDetail)
+	bf.WriteString("\n")
+	bf.WriteString("---------------------\n")
+	bf.WriteString("Given this information, Please answer my question in the same language that I used to ask you.\n")
+	bf.WriteString("and if the answer is not contained within the text below, say \"我不知道.\"")
+	bf.WriteString("Please answer the question: ")
+
+	return bf.String(), nil
 }
 
 //"We have provided context information below: \n"
