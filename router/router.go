@@ -5,6 +5,7 @@ import (
 	"github.com/TskFok/OpenAi/controller"
 	"github.com/TskFok/OpenAi/controller/websocket/chat"
 	"github.com/TskFok/OpenAi/controller/websocket/me"
+	"github.com/TskFok/OpenAi/controller/websocket/vicuna"
 	"github.com/TskFok/OpenAi/middleware"
 	"github.com/TskFok/OpenAi/public/html"
 	"github.com/TskFok/OpenAi/service/applet"
@@ -18,6 +19,7 @@ var Handle *gin.Engine
 func InitRouter() {
 	go chat.WebsocketManager.Start()
 	go me.WebsocketManager.Start()
+	go vicuna.WebsocketManager.Start()
 
 	gin.SetMode(global.AppMode)
 
@@ -37,6 +39,11 @@ func InitRouter() {
 	wsGroupMe := Handle.Group("/me")
 	{
 		wsGroupMe.GET("/:channel", me.WebsocketManager.WsClient)
+	}
+
+	wsGroupVicuna := Handle.Group("/vicuna")
+	{
+		wsGroupVicuna.GET("/:channel", vicuna.WebsocketManager.WsClient)
 	}
 
 	Handle.Use(middleware.Jwt())
