@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/TskFok/OpenAi/app/global"
 	"github.com/TskFok/OpenAi/middleware"
 	"github.com/TskFok/OpenAi/service/chat/chatStream"
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"sync"
 	"time"
 )
@@ -101,20 +99,8 @@ func (c *Client) Write() {
 				log.Printf("json error")
 			}
 
-			config := chatStream.DefaultConfig(global.OpenAiToken)
-			//使用warp代理,不使用代理 cai := chatStream.NewClient(send.Key)
-			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
-			if err != nil {
-				panic(err)
-			}
-			transport := &http.Transport{
-				Proxy: http.ProxyURL(proxyUrl),
-			}
-			config.HTTPClient = &http.Client{
-				Transport: transport,
-			}
-
-			cai := chatStream.NewClientWithConfig(config)
+			//使用warp代理,不使用代理
+			cai := chatStream.NewClient("")
 
 			content, err := file(send.Question, c.Id)
 
@@ -124,7 +110,7 @@ func (c *Client) Write() {
 
 			req := chatStream.ChatCompletionRequest{
 				Model:     chatStream.VICUNA13B,
-				MaxTokens: 500,
+				MaxTokens: 1000,
 				Messages: []chatStream.ChatCompletionMessage{
 					{
 						Role:    chatStream.ChatMessageRoleUser,
