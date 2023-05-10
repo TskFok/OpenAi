@@ -72,7 +72,6 @@ var disabledModelsForEndpoints = map[string]map[string]bool{
 		GPT3Curie:               true,
 		GPT3Ada:                 true,
 		GPT3Babbage:             true,
-		VICUNA13B:               true,
 	},
 }
 
