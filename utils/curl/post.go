@@ -27,7 +27,13 @@ func Post(url string, body interface{}, header http.Header, responseBody any) in
 
 	res.Header = header
 
-	rep, _ := client.Do(res)
+	rep, err := client.Do(res)
+
+	if err != nil {
+		fmt.Println(err.Error())
+
+		return 500
+	}
 
 	if rep.StatusCode == http.StatusOK {
 		defer rep.Body.Close()

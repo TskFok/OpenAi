@@ -43,7 +43,7 @@ func file(question, id string) (string, error) {
 	body["input"] = question
 
 	requestion := &res{}
-	httpStatus := curl.Post("http://region-9.seetacloud.com:41584/v1/embeddings", body, header, requestion)
+	httpStatus := curl.Post(global.VicunaUrl+"/embeddings", body, header, requestion)
 
 	if httpStatus != http.StatusOK {
 		return "", errors.New("查询失败")

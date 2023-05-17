@@ -33,4 +33,5 @@ func InitConfig() {
 	global.JwtExpire = viper.Get("jwt.expire").(int)
 	global.OpenAiToken = viper.Get("openai.token").(string)
 	global.Corpus = viper.Get("corpus").([]interface{})
+	global.VicunaUrl = viper.Get("vicuna.url").(string)
 }

@@ -9,10 +9,12 @@ import (
 	"github.com/TskFok/OpenAi/service/chat/chatStream"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/sashabaranov/go-openai"
 	uuid "github.com/satori/go.uuid"
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -30,9 +32,11 @@ type Manager struct {
 
 // Client 单个 websocket 信息
 type Client struct {
-	Id, Group string
-	Socket    *websocket.Conn
-	Message   chan []byte
+	Id, Group    string
+	Socket       *websocket.Conn
+	Ccm          []chatStream.ChatCompletionMessage
+	Message      chan []byte
+	LastQuestion []byte
 }
 
 // MessageData 单个发送数据信息
@@ -102,22 +106,35 @@ func (c *Client) Write() {
 			//使用warp代理,不使用代理
 			cai := chatStream.NewClient("")
 
-			content, err := file(send.Question, c.Id)
+			if len(c.Ccm) == 0 {
+				content, err := file(send.Question, c.Id)
 
-			if err != nil {
-				return
+				if err != nil {
+					return
+				}
+
+				c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+					Role:    openai.ChatMessageRoleUser,
+					Content: content,
+				})
+			} else {
+				c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+					Role:    openai.ChatMessageRoleUser,
+					Content: send.Question,
+				})
 			}
+
+			if len(c.Ccm) > 7 {
+				c.Ccm = c.Ccm[len(c.Ccm)-7:]
+			}
+
+			fmt.Println(c.Ccm)
 
 			req := chatStream.ChatCompletionRequest{
 				Model:     chatStream.VICUNA13B,
-				MaxTokens: 1000,
-				Messages: []chatStream.ChatCompletionMessage{
-					{
-						Role:    chatStream.ChatMessageRoleUser,
-						Content: content,
-					},
-				},
-				Stream: true,
+				MaxTokens: 250,
+				Messages:  c.Ccm,
+				Stream:    true,
 			}
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {
@@ -147,6 +164,7 @@ func (c *Client) Write() {
 						stream.Close()
 						break
 					}
+					c.LastQuestion = append(c.LastQuestion, response.Choices[0].Delta.Content...)
 
 					msg <- response.Choices[0].Delta.Content
 				}
@@ -166,6 +184,17 @@ func (c *Client) Write() {
 					if err != nil {
 						log.Printf("client [%s] writemessage err: %s", c.Id, err)
 					}
+
+					cct := string(c.LastQuestion)
+					if len(c.LastQuestion) > 1000 {
+						cct = string(c.LastQuestion[0:1000])
+					}
+					cct = strings.ReplaceAll(cct, "\n", "")
+
+					c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+						Role:    openai.ChatMessageRoleAssistant,
+						Content: cct,
+					})
 
 					goto EXIT
 				}

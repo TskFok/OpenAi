@@ -18,5 +18,7 @@ jwt:
   expire: 3 #过期时间3小时
 openai:
   token: ""
+vicuna:
+  url: "http://*******.com"
 corpus:
   - ""

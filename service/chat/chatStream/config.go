@@ -1,11 +1,11 @@
 package chatStream
 
 import (
+	"github.com/TskFok/OpenAi/app/global"
 	"net/http"
 )
 
 const (
-	apiURLv1                       = "http://region-9.seetacloud.com:41584/v1"
 	defaultEmptyMessagesLimit uint = 300
 )
 
@@ -24,7 +24,7 @@ type ClientConfig struct {
 func DefaultConfig(authToken string) ClientConfig {
 	return ClientConfig{
 		HTTPClient: &http.Client{},
-		BaseURL:    apiURLv1,
+		BaseURL:    global.VicunaUrl,
 		OrgID:      "",
 		authToken:  authToken,
 
