@@ -35,6 +35,7 @@ const (
 	GPT3Ada                 = "ada"
 	GPT3Babbage             = "babbage"
 	VICUNA13B               = "vicuna-13b"
+	LLAALP                  = "lla-alp"
 )
 
 // Codex Defines the models provided by OpenAI.
@@ -55,6 +56,7 @@ var disabledModelsForEndpoints = map[string]map[string]bool{
 		GPT432K:           true,
 		GPT432K0314:       true,
 		VICUNA13B:         true,
+		LLAALP:            true,
 	},
 	"/chat/completions": {
 		CodexCodeDavinci002:     true,
