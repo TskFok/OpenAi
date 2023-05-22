@@ -92,7 +92,7 @@ func file(question, id string) (string, error) {
 	}
 	bf.WriteString("---------------------\n")
 	bf.WriteString("Given this information, Please answer my question in the same language that I used to ask you.\n")
-	bf.WriteString("and if the answer is not contained within the text below, say \"我不知道.\"")
+	bf.WriteString("and if the answer is not contained within the text below, say \"我不知道.\" \n")
 	bf.WriteString("Please answer the question: ")
 	bf.WriteString(question)
 
