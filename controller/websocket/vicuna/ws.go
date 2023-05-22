@@ -37,6 +37,7 @@ type Client struct {
 	Ccm          []chatStream.ChatCompletionMessage
 	Message      chan []byte
 	LastQuestion []byte
+	Base         string
 }
 
 // MessageData 单个发送数据信息
@@ -95,6 +96,7 @@ func (c *Client) Write() {
 				log.Printf("client [%s] write message: %s", c.Id, "no ok")
 				return
 			}
+			c.Ccm = []chatStream.ChatCompletionMessage{}
 
 			send := &WsSend{}
 			err := json.Unmarshal(message, send)
@@ -106,27 +108,34 @@ func (c *Client) Write() {
 			//使用warp代理,不使用代理
 			cai := chatStream.NewClient("")
 
-			if len(c.Ccm) == 0 {
-				content, err := file(send.Question, c.Id)
+			//if len(c.Ccm) == 0 {
+			content, err := file(send.Question, c.Id)
+			c.Base = content
 
-				if err != nil {
-					return
-				}
-
-				c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
-					Role:    openai.ChatMessageRoleUser,
-					Content: content,
-				})
-			} else {
-				c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
-					Role:    openai.ChatMessageRoleUser,
-					Content: send.Question,
-				})
+			if err != nil {
+				return
 			}
 
-			if len(c.Ccm) > 7 {
-				c.Ccm = c.Ccm[len(c.Ccm)-7:]
-			}
+			c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleUser,
+				Content: c.Base + send.Question,
+			})
+			//} else {
+			//	c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+			//		Role:    openai.ChatMessageRoleUser,
+			//		Content: send.Question,
+			//	})
+			//}
+
+			//if len(c.Ccm) > 7 {
+			//	c.Ccm = c.Ccm[len(c.Ccm)-7:]
+			//
+			//	for i, v := range c.Ccm {
+			//		if i == 0 {
+			//			v.Content = c.Base + v.Content
+			//		}
+			//	}
+			//}
 
 			fmt.Println(c.Ccm)
 
@@ -191,10 +200,10 @@ func (c *Client) Write() {
 					}
 					cct = strings.ReplaceAll(cct, "\n", "")
 
-					c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
-						Role:    openai.ChatMessageRoleAssistant,
-						Content: cct,
-					})
+					//c.Ccm = append(c.Ccm, chatStream.ChatCompletionMessage{
+					//	Role:    openai.ChatMessageRoleAssistant,
+					//	Content: cct,
+					//})
 
 					goto EXIT
 				}
