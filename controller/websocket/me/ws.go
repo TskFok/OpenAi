@@ -122,16 +122,23 @@ func (c *Client) Write() {
 				return
 			}
 
+			msgs := make([]openai.ChatCompletionMessage, 2)
+
+			msgs[0] = openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: "You are a helpful assistant that accurately answers queries using Paul Graham's essays. Use the text provided to form your answer, but avoid copying word-for-word from the essays. Try to use your own words when possible. Keep your answer under 5 sentences. Be accurate, helpful, concise, and clear.",
+			}
+
+			msgs[1] = openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleUser,
+				Content: content,
+			}
+
 			req := openai.ChatCompletionRequest{
 				Model:     openai.GPT3Dot5Turbo,
 				MaxTokens: 500,
-				Messages: []openai.ChatCompletionMessage{
-					{
-						Role:    openai.ChatMessageRoleUser,
-						Content: content,
-					},
-				},
-				Stream: true,
+				Messages:  msgs,
+				Stream:    true,
 			}
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {

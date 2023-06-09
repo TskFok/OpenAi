@@ -140,7 +140,7 @@ func (c *Client) Write() {
 			fmt.Println(c.Ccm)
 
 			req := chatStream.ChatCompletionRequest{
-				Model:     chatStream.LLAALP,
+				Model:     chatStream.VICUNA13B,
 				MaxTokens: 250,
 				Messages:  c.Ccm,
 				Stream:    true,

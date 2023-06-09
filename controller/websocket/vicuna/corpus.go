@@ -132,28 +132,23 @@ func file(question, id string) (string, error) {
 
 	bf := buffer.Buffer{}
 	bf.WriteString("We have provided context information below: \n")
-	bf.WriteString("---------------------\n")
+	bf.WriteString("[")
 	bf.WriteString(baseRr.Corpus)
-	bf.WriteString("\n")
 
 	//取最接近的三十个语料合并作为一个提示,语料越细越好
 	for _, v := range cache.ZRangeAndRemove("embeding_new_list:"+id, "0", "1", 0, 30) {
+		bf.WriteString("\n")
 		bf.WriteString(v)
-
 		if bytes.Count(bf.Bytes(), nil) > 600 {
 			break
 		}
-		bf.WriteString(",")
 	}
-
-	if len(useKeys) != 0 {
-		bf.WriteString("\n")
-	}
-
-	bf.WriteString("---------------------\n")
+	bf.WriteString("]\n")
+	bf.WriteString("--\n")
 	bf.WriteString("Given this information, Please answer my question in the same language that I used to ask you.\n")
 	bf.WriteString("and if the answer is not contained within the text below, say \"我不知道.\" \n")
-	bf.WriteString("Please answer the question: \n")
+	bf.WriteString("--\n")
+	bf.WriteString("Please answer the question: ")
 
 	return bf.String(), nil
 }
