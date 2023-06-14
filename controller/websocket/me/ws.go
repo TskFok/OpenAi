@@ -75,6 +75,12 @@ func (c *Client) Read() {
 
 type WsSend struct {
 	Question string `json:"question,omitempty"`
+	Setup    struct {
+		Token           int     `json:"token,omitempty"`
+		Temperature     float32 `json:"temperature,omitempty"`
+		PresencePenalty float32 `json:"presence_penalty,omitempty"`
+		HistoryNum      int     `json:"history_num,omitempty"`
+	} `json:"setup"`
 }
 
 // 写信息，从 channel 变量 Send 中读取数据写入 websocket 连接
@@ -126,7 +132,7 @@ func (c *Client) Write() {
 
 			msgs[0] = openai.ChatCompletionMessage{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "You are a helpful assistant that accurately answers queries using Paul Graham's essays. Use the text provided to form your answer, but avoid copying word-for-word from the essays. Try to use your own words when possible. Keep your answer under 5 sentences. Be accurate, helpful, concise, and clear.",
+				Content: "Keep your answer under 5 sentences. Be accurate, helpful, concise, and clear.",
 			}
 
 			msgs[1] = openai.ChatCompletionMessage{
@@ -135,10 +141,12 @@ func (c *Client) Write() {
 			}
 
 			req := openai.ChatCompletionRequest{
-				Model:     openai.GPT3Dot5Turbo,
-				MaxTokens: 500,
-				Messages:  msgs,
-				Stream:    true,
+				Model:           openai.GPT3Dot5Turbo,
+				MaxTokens:       send.Setup.Token,
+				Messages:        msgs,
+				Stream:          true,
+				Temperature:     send.Setup.Temperature,
+				PresencePenalty: send.Setup.PresencePenalty,
 			}
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {

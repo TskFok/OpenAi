@@ -23,6 +23,13 @@ type stream struct {
 	Content string `json:"content,omitempty"`
 }
 
+type Setup struct {
+	Token           int     `json:"token,omitempty"`
+	Temperature     float32 `json:"temperature,omitempty"`
+	PresencePenalty float32 `json:"presence_penalty,omitempty"`
+	HistoryNum      int     `json:"history_num,omitempty"`
+}
+
 func ChatSse(ctx *gin.Context) {
 	w := ctx.Writer
 
@@ -37,12 +44,23 @@ func ChatSse(ctx *gin.Context) {
 		log.Panic("server not support") //浏览器不兼容
 	}
 	que := ctx.Query("question")
+	setup := ctx.Query("setup")
 
 	hm := &model.History{}
 	userId, exists := ctx.Get("user_id")
 
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, "用户不存在")
+
+		return
+	}
+
+	sp := &Setup{}
+	err := json.Unmarshal([]byte(setup), sp)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "配置错误")
+
 		return
 	}
 
@@ -106,16 +124,19 @@ func ChatSse(ctx *gin.Context) {
 		Content: que,
 	})
 
-	if len(megList) > 7 {
-		megList = megList[len(megList)-7:]
+	if len(megList) > sp.HistoryNum {
+		megList = megList[len(megList)-sp.HistoryNum:]
 	}
 
 	req := openai.ChatCompletionRequest{
-		Model:     openai.GPT3Dot5Turbo,
-		MaxTokens: 1000,
-		Messages:  megList,
-		Stream:    true,
+		Model:           openai.GPT3Dot5Turbo,
+		MaxTokens:       sp.Token,
+		Messages:        megList,
+		Stream:          true,
+		Temperature:     sp.Temperature,
+		PresencePenalty: sp.PresencePenalty,
 	}
+
 	stream, err := c.CreateChatCompletionStream(context.Background(), req)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -203,6 +224,16 @@ func Stream(ctx *gin.Context) {
 		log.Panic("server not support") //浏览器不兼容
 	}
 	que := ctx.PostForm("question")
+	setup := ctx.PostForm("setup")
+
+	sp := &Setup{}
+	err := json.Unmarshal([]byte(setup), sp)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, "配置错误")
+
+		return
+	}
 
 	hm := &model.History{}
 	userId, exists := ctx.Get("user_id")
@@ -273,15 +304,17 @@ func Stream(ctx *gin.Context) {
 		Content: que,
 	})
 
-	if len(megList) > 7 {
-		megList = megList[len(megList)-7:]
+	if len(megList) > sp.HistoryNum {
+		megList = megList[len(megList)-sp.HistoryNum:]
 	}
 
 	req := openai.ChatCompletionRequest{
-		Model:     openai.GPT3Dot5Turbo,
-		MaxTokens: 3000,
-		Messages:  megList,
-		Stream:    true,
+		Model:           openai.GPT3Dot5Turbo,
+		MaxTokens:       sp.Token,
+		Messages:        megList,
+		Stream:          true,
+		PresencePenalty: sp.PresencePenalty,
+		Temperature:     sp.Temperature,
 	}
 	stream, err := c.CreateChatCompletionStream(context.Background(), req)
 	if err != nil {

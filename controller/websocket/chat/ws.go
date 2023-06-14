@@ -80,6 +80,12 @@ func (c *Client) Read() {
 
 type WsSend struct {
 	Question string `json:"question,omitempty"`
+	Setup    struct {
+		Token           int     `json:"token,omitempty"`
+		Temperature     float32 `json:"temperature,omitempty"`
+		PresencePenalty float32 `json:"presence_penalty,omitempty"`
+		HistoryNum      int     `json:"history_num,omitempty"`
+	} `json:"setup"`
 }
 
 // 写信息，从 channel 变量 Send 中读取数据写入 websocket 连接
@@ -134,16 +140,19 @@ func (c *Client) Write() {
 				Content: send.Question,
 			})
 
-			if len(c.Ccm) > 7 {
-				c.Ccm = c.Ccm[len(c.Ccm)-7:]
+			if len(c.Ccm) > send.Setup.HistoryNum {
+				c.Ccm = c.Ccm[len(c.Ccm)-send.Setup.HistoryNum:]
 			}
 
 			req := openai.ChatCompletionRequest{
-				Model:     openai.GPT3Dot5Turbo,
-				MaxTokens: 3000,
-				Messages:  c.Ccm,
-				Stream:    true,
+				Model:           openai.GPT3Dot5Turbo,
+				MaxTokens:       send.Setup.Token,
+				Messages:        c.Ccm,
+				Stream:          true,
+				Temperature:     send.Setup.Temperature,
+				PresencePenalty: send.Setup.PresencePenalty,
 			}
+
 			stream, err := cai.CreateChatCompletionStream(context.Background(), req)
 			if err != nil {
 				fmt.Println(err.Error())
