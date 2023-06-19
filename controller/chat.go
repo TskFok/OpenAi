@@ -129,7 +129,7 @@ func ChatSse(ctx *gin.Context) {
 	}
 
 	req := openai.ChatCompletionRequest{
-		Model:           openai.GPT3Dot5Turbo,
+		Model:           openai.GPT3Dot5Turbo16K,
 		MaxTokens:       sp.Token,
 		Messages:        megList,
 		Stream:          true,
@@ -309,7 +309,7 @@ func Stream(ctx *gin.Context) {
 	}
 
 	req := openai.ChatCompletionRequest{
-		Model:           openai.GPT3Dot5Turbo,
+		Model:           openai.GPT3Dot5Turbo16K,
 		MaxTokens:       sp.Token,
 		Messages:        megList,
 		Stream:          true,

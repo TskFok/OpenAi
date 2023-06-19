@@ -141,7 +141,7 @@ func (c *Client) Write() {
 			}
 
 			req := openai.ChatCompletionRequest{
-				Model:           openai.GPT3Dot5Turbo,
+				Model:           openai.GPT3Dot5Turbo16K,
 				MaxTokens:       send.Setup.Token,
 				Messages:        msgs,
 				Stream:          true,

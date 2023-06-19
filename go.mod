@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/redis/go-redis/v9 v9.0.3
-	github.com/sashabaranov/go-openai v1.5.6
+	github.com/sashabaranov/go-openai v1.10.2-0.20230614142303-7e76a682a949
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
