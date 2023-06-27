@@ -430,5 +430,24 @@ func (manager *Manager) WsClient(ctx *gin.Context) {
 	manager.RegisterClient(client)
 	go client.Read()
 	go client.Write()
+	go client.Ping()
 	time.Sleep(time.Second * 15)
+}
+
+func (c *Client) Ping() {
+	i := 1
+	for {
+		i++
+		time.Sleep(time.Second)
+
+		if i > 60 {
+			err := c.Socket.WriteMessage(websocket.PingMessage, []byte(""))
+
+			if err != nil {
+				fmt.Printf("ping error %s", err.Error())
+				break
+			}
+			i = 1
+		}
+	}
 }
