@@ -8,4 +8,4 @@ RUN go mod download && go mod verify
 COPY . .
 RUN make build-linux
 
-CMD ["chat-api"]
+CMD ["./chat-api"]
