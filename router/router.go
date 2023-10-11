@@ -53,7 +53,7 @@ func InitRouter() {
 	})
 
 	Handle.GET("/wx-applet", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "wxApplet.html", gin.H{
+		c.HTML(http.StatusOK, "wx_applet.html", gin.H{
 			"code": template.URL(applet.GetCode()),
 		})
 	})
