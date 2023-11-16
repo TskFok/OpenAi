@@ -5,7 +5,7 @@ import (
 	"github.com/TskFok/OpenAi/app/global"
 )
 
-type User struct {
+type user struct {
 	BaseModel
 	Id       uint32 `gorm:"column:id;type:INT UNSIGNED;AUTO_INCREMENT;NOT NULL"`
 	Email    string `gorm:"column:email;type:VARCHAR(255);NOT NULL"`
@@ -14,7 +14,11 @@ type User struct {
 	Status   int8   `gorm:"column:status;type:TINYINT(1);NOT NULL"`
 }
 
-func (*User) Find(where interface{}) (u *User) {
+func NewUser() *user {
+	return new(user)
+}
+
+func (*user) Find(where interface{}) (u *user) {
 	db := global.DataBase.Where(where).First(&u)
 
 	if db.Error != nil {
@@ -24,7 +28,7 @@ func (*User) Find(where interface{}) (u *User) {
 	return u
 }
 
-func (*User) Create(user *User) uint32 {
+func (*user) Create(user *user) uint32 {
 	db := global.DataBase.Create(user)
 
 	if db.Error != nil {

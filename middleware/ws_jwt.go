@@ -42,7 +42,7 @@ func Validate(ctx *gin.Context) int {
 		ctx.Set("email", user.Email)
 		ctx.Set("user_id", user.Id)
 	} else {
-		userModel := &model.User{}
+		userModel := model.NewUser()
 		condition := make(map[string]interface{})
 		condition["id"] = claims.Uid
 		user := userModel.Find(condition)

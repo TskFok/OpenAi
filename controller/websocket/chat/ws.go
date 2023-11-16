@@ -113,7 +113,7 @@ func (c *Client) Write() {
 				log.Printf("json error")
 			}
 
-			hm := &model.History{}
+			hm := model.NewHistory()
 
 			hm.Uid = c.Uid
 			hm.Content = send.Question

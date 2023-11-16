@@ -18,7 +18,7 @@ func Login(ctx *gin.Context) {
 
 	em := make(map[string]string)
 	em["email"] = email
-	mu := &model.User{}
+	mu := model.NewUser()
 	u := mu.Find(em)
 
 	if u == nil {
@@ -66,7 +66,7 @@ func Register(ctx *gin.Context) {
 
 	em := make(map[string]string)
 	em["email"] = email
-	mu := &model.User{}
+	mu := model.NewUser()
 	u := mu.Find(em)
 
 	if u != nil {

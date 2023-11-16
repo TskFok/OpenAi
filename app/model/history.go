@@ -5,7 +5,7 @@ import (
 	"github.com/TskFok/OpenAi/app/global"
 )
 
-type History struct {
+type history struct {
 	BaseModel
 	Id        uint32 `gorm:"column:id;type:INT UNSIGNED;AUTO_INCREMENT;NOT NULL"`
 	Uid       uint32 `gorm:"column:uid;type:INT UNSIGNED;NOT NULL"`
@@ -13,7 +13,15 @@ type History struct {
 	IsDeleted int8   `gorm:"column:is_deleted;type:TINYINT(1);NOT NULL"`
 }
 
-func (*History) Create(history *History) uint32 {
+func NewHistory() *history {
+	return new(history)
+}
+
+func NewHistorySlice(len int) []*history {
+	return make([]*history, len)
+}
+
+func (*history) Create(history *history) uint32 {
 	db := global.DataBase.Create(history)
 
 	if db.Error != nil {
@@ -25,14 +33,14 @@ func (*History) Create(history *History) uint32 {
 	return history.Id
 }
 
-func (*History) TopTen(condition map[string]interface{}, res []*History) []*History {
+func (*history) TopTen(condition map[string]interface{}, res []*history) []*history {
 	global.DataBase.Where(condition).Offset(0).Limit(8).Order("id desc").Find(&res)
 
 	return res
 }
 
-func (*History) Update(condition map[string]interface{}, updates map[string]interface{}) bool {
-	db := global.DataBase.Model(&History{}).Where(condition).Updates(updates)
+func (*history) Update(condition map[string]interface{}, updates map[string]interface{}) bool {
+	db := global.DataBase.Model(&history{}).Where(condition).Updates(updates)
 
 	if db.Error != nil {
 		fmt.Println(db.Error.Error())

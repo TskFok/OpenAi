@@ -46,7 +46,7 @@ func ChatSse(ctx *gin.Context) {
 	que := ctx.Query("question")
 	setup := ctx.Query("setup")
 
-	hm := &model.History{}
+	hm := model.NewHistory()
 	userId, exists := ctx.Get("user_id")
 
 	if !exists {
@@ -175,7 +175,8 @@ func ChatSse(ctx *gin.Context) {
 				msg <- "<<emptystring>>"
 			}
 
-			bf.WriteString(response.Choices[0].Delta.Content)
+			slen, _ := bf.WriteString(response.Choices[0].Delta.Content)
+			_ = slen
 			msg <- response.Choices[0].Delta.Content
 		}
 	}()
@@ -235,7 +236,7 @@ func Stream(ctx *gin.Context) {
 		return
 	}
 
-	hm := &model.History{}
+	hm := model.NewHistory()
 	userId, exists := ctx.Get("user_id")
 
 	if !exists {
@@ -342,7 +343,8 @@ func Stream(ctx *gin.Context) {
 				stop <- "error"
 				break
 			}
-			bf.WriteString(response.Choices[0].Delta.Content)
+			slen, _ := bf.WriteString(response.Choices[0].Delta.Content)
+			_ = slen
 			msg <- response.Choices[0].Delta.Content
 		}
 	}()
@@ -351,7 +353,8 @@ func Stream(ctx *gin.Context) {
 		select {
 		case message, ok := <-msg:
 			if ok {
-				w.Write([]byte(message.(string)))
+				slen, _ := w.Write([]byte(message.(string)))
+				_ = slen
 			}
 			return ok
 		case <-stop:

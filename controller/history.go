@@ -19,7 +19,7 @@ func DeleteHistory(ctx *gin.Context) {
 	}
 	uidd := uid.(uint32)
 
-	hm := &model.History{}
+	hm := model.NewHistory()
 
 	condition := make(map[string]interface{})
 	condition["uid"] = uidd
@@ -46,9 +46,9 @@ func HistoryList(ctx *gin.Context) {
 	condition["uid"] = uid.(uint32)
 	condition["is_deleted"] = 0
 
-	historyMap := make([]*model.History, 8)
+	historyMap := model.NewHistorySlice(8)
 
-	hm := &model.History{}
+	hm := model.NewHistory()
 	hm.TopTen(condition, historyMap)
 
 	ctx.JSON(http.StatusOK, historyMap)
