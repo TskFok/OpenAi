@@ -32,4 +32,5 @@ func InitConfig() {
 	global.JwtSecret = viper.Get("jwt.secret").(string)
 	global.JwtExpire = viper.Get("jwt.expire").(int)
 	global.OpenAiToken = viper.Get("openai.token").(string)
+	global.WarpUrl = viper.Get("warp.url").(string)
 }

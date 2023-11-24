@@ -20,3 +20,4 @@ var MysqlPrefix string
 var JwtSecret string
 var JwtExpire int
 var OpenAiToken string
+var WarpUrl string

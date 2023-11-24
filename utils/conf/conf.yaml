@@ -18,3 +18,5 @@ jwt:
   expire: 3 #过期时间3小时
 openai:
   token: ""
+warp:
+  url: "http://127.0.0.1:40000"

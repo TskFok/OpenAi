@@ -109,7 +109,7 @@ func (c *Client) Write() {
 
 			config := openai.DefaultConfig(global.OpenAiToken)
 			//使用warp代理,不使用代理 cai := openai.NewClient(send.Key)
-			proxyUrl, err := url.Parse("http://127.0.0.1:40000")
+			proxyUrl, err := url.Parse(global.WarpUrl)
 			if err != nil {
 				panic(err)
 			}
